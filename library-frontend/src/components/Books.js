@@ -3,7 +3,7 @@ import { useQuery } from '@apollo/client'
 import { All_BOOKS } from '../queries'
 
 const Books = (props) => {
-  const result = useQuery(All_BOOKS)
+  const result = useQuery(All_BOOKS,{ pollInterval : 2000})
 
   if (!props.show) {
     return null
