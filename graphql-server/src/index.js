@@ -1,5 +1,24 @@
 const { ApolloServer, gql } = require('apollo-server')
 const { v1 : uuid } = require('uuid')
+const mongoose = require('mongoose')
+
+const MONGODB_URI = "mongodb+srv://dionisio_24:GHh7o2ZpgWOfihkl@cluster0.6jg7g.mongodb.net/<dbname>?retryWrites=true&w=majority";
+
+console.log("connecting to", MONGODB_URI);
+
+mongoose
+  .connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+  })
+  .then(() => {
+    console.log("connected to MongoDB");
+  })
+  .catch((error) => {
+    console.log("error connection to MongoDB:", error.message);
+  });
 
 let authors = [
   {
@@ -112,7 +131,7 @@ const typeDefs = gql`
       title : String!
       published : Int!
       author : Author!
-      genres : [String!]
+      genres : [String!]!
       id : ID!
   }
   type Author {

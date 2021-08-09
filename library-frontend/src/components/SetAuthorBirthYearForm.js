@@ -1,10 +1,10 @@
-import React,{ useState, useEffect } from 'react'
+import React,{ useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { SET_AUTHOR_BIRTH_YEAR } from '../queries'
 import Select from 'react-select'
 
 const AuthorBirdYearForm = ({ authors }) => {
-    const [ setAuthorsBirthYear , result ] = useMutation(SET_AUTHOR_BIRTH_YEAR)
+    const [ setAuthorsBirthYear , ] = useMutation(SET_AUTHOR_BIRTH_YEAR)
     const [selectedName,setSelectedName] = useState(null)
     const [year,setYear] = useState('')
 
