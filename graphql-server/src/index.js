@@ -184,7 +184,6 @@ const resolvers = {
         await newBook.save()  
 
         return newBook
-
       } catch (error) {
         throw new UserInputError(error.message, {
           invalidArgs: args,
