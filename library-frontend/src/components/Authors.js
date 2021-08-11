@@ -3,10 +3,10 @@ import { useQuery } from '@apollo/client'
 import { ALL_AUTHORS } from '../queries'
 import AuthorBirdYearForm from './SetAuthorBirthYearForm'
 
-const Authors = (props) => {
+const Authors = ({show,setError}) => {
   const result = useQuery(ALL_AUTHORS, { pollInterval: 2000 })
 
-  if (!props.show) {
+  if (!show) {
     return null
   }
 
@@ -42,7 +42,7 @@ const Authors = (props) => {
         </table>
 
       </div>
-      <AuthorBirdYearForm authors = {authors} />
+      <AuthorBirdYearForm authors = {authors} setError = {setError}/>
     </>
   )
 }

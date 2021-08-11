@@ -3,8 +3,10 @@ import { useMutation } from '@apollo/client'
 import { SET_AUTHOR_BIRTH_YEAR } from '../queries'
 import Select from 'react-select'
 
-const AuthorBirdYearForm = ({ authors }) => {
-    const [ setAuthorsBirthYear , ] = useMutation(SET_AUTHOR_BIRTH_YEAR)
+const AuthorBirdYearForm = ({ authors, setError }) => {
+    const [ setAuthorsBirthYear , ] = useMutation(SET_AUTHOR_BIRTH_YEAR,{ 
+        onError: (error) => { setError(error.graphQLErrors[0].message)}
+    })
     const [selectedName,setSelectedName] = useState(null)
     const [year,setYear] = useState('')
 
