@@ -16,7 +16,7 @@ const LoginForm = ({setError,setUser,show}) => {
             setUser(token)
             localStorage.setItem('library-user-token', token)
         }
-    },[result.data])
+    },[result.data,setUser])
 
     const handleSubmit = (e) => {
         e.preventDefault()

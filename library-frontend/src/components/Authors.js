@@ -1,10 +1,16 @@
-import React from 'react'
+import React, { useMemo} from 'react'
 import { useQuery } from '@apollo/client'
 import { ALL_AUTHORS } from '../queries'
 import AuthorBirdYearForm from './SetAuthorBirthYearForm'
 
 const Authors = ({show,setError,user}) => {
   const result = useQuery(ALL_AUTHORS, { pollInterval: 2000 })
+  const authors = useMemo( ()=> {
+    if(result.data){
+      return [...result.data.allAuthors]
+    }
+    return []
+  },[result.data] )
 
   if (!show) {
     return null
@@ -13,8 +19,6 @@ const Authors = ({show,setError,user}) => {
   if (result.loading) {
     return <p>Loading...</p>
   }
-
-  const authors = [...result.data.allAuthors]
 
   return (
     <>
