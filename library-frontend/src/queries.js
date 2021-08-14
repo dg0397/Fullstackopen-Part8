@@ -11,7 +11,7 @@ export const ALL_AUTHORS = gql`
     }
 `
 
-export const All_BOOKS = gql`
+export const ALL_BOOKS = gql`
     query{
         allBooks{
             title
@@ -67,6 +67,16 @@ export const LOGIN = gql`
             password : $password
         ){
             value
+        }
+    }
+`
+
+export const USER_INFO = gql`
+    query{
+        me{   
+            username
+            favoriteGenre
+            id    
         }
     }
 `

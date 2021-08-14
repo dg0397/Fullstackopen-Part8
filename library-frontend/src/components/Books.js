@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import { All_BOOKS } from '../queries'
+import { ALL_BOOKS } from '../queries'
 import GenreMenu from './GenreMenu'
+import BooksList from './BooksList'
 
 const Books = (props) => {
-  const result = useQuery(All_BOOKS,{ pollInterval : 2000})
+  const result = useQuery(ALL_BOOKS)
   const [genreSelected,setGenreSelected] = useState("all")
   const books = useMemo( ()=> {
     if(result.data){
@@ -54,28 +55,7 @@ const Books = (props) => {
   return (
     <div>
       <h2>books</h2>
-
-      <table>
-        <tbody>
-          <tr>
-            <th></th>
-            <th>
-              author
-            </th>
-            <th>
-              published
-            </th>
-          </tr>
-          {booksToShow.map(a =>
-            <tr key={a.title}>
-              <td>{a.title}</td>
-              <td>{a.author.name}</td>
-              <td>{a.published}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-
+      <BooksList books = {booksToShow} />
       <GenreMenu genres = {genres} setGenre = {handleClick} genreSelected = {genreSelected} />
     </div>
   )

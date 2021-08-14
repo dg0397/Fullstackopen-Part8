@@ -4,7 +4,7 @@ import { ALL_AUTHORS } from '../queries'
 import AuthorBirdYearForm from './SetAuthorBirthYearForm'
 
 const Authors = ({show,setError,user}) => {
-  const result = useQuery(ALL_AUTHORS, { pollInterval: 2000 })
+  const result = useQuery(ALL_AUTHORS)
   const authors = useMemo( ()=> {
     if(result.data){
       return [...result.data.allAuthors]
