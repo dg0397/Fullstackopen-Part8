@@ -4,7 +4,17 @@ import { ADD_BOOK } from '../queries'
 
 const NewBook = ({show , setError}) => {
   const [ addNewBook ] = useMutation(ADD_BOOK,{ 
-    onError: (error) => { setError(error.graphQLErrors[0].message)}
+    onError: (error) => { setError(error.graphQLErrors[0].message)},
+    //update:(store,response) =>{
+    //  const dataInStore = store.readQuery({query:ALL_BOOKS})
+    //  store.writeQuery({
+    //    query:ALL_BOOKS,
+    //    data:{
+    //      ...dataInStore,
+    //      allBooks : [...dataInStore.allBooks,response.data.addBook]
+    //    }
+    //  })
+    //}
   })
   
   const [title, setTitle] = useState('')

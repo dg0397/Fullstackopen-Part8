@@ -1,29 +1,45 @@
-import React, { useMemo, useState } from 'react'
-import { useQuery } from '@apollo/client'
+import React, { useEffect, useMemo, useState } from 'react'
+import { useLazyQuery } from '@apollo/client'
 import { ALL_BOOKS } from '../queries'
 import GenreMenu from './GenreMenu'
 import BooksList from './BooksList'
 
 const Books = (props) => {
-  const result = useQuery(ALL_BOOKS)
+  const [getBooks,result] = useLazyQuery(ALL_BOOKS,{fetchPolicy:'cache-and-network'})
+  const [allBooks,setAllBooks] = useState([])
   const [genreSelected,setGenreSelected] = useState("all")
-  const books = useMemo( ()=> {
-    if(result.data){
-      return [...result.data.allBooks]
+  
+  useEffect(()=>{
+    if(genreSelected === 'all'){
+      getBooks()
+    }else{
+      getBooks({variables:{genre:genreSelected}})
     }
-    return []
-  },[result.data] )
+  },[getBooks,genreSelected])
+  
+  useEffect( ()=> {
+    if(result.data){
+      if(result.data.allBooks.length > allBooks.length){
+        console.log('updating book list')
+        setAllBooks(prevState => [...result.data.allBooks])
+      }
+    }
+  },[result.data,allBooks] )
   let genres = []
 
-  const generateSelectedBooks = ({books,genreSelected}) => {
+  const generateSelectedBooks = ({allBooks,genreSelected,result}) => {
     if(genreSelected === 'all'){
-      return books
+      return allBooks
+    }if(result.data){
+      return result.data.allBooks
     }
-    const booksByGenre = books.filter( book => book.genres.includes(genreSelected) ) 
-    return  booksByGenre
+    return []
   }
 
-  const booksToShow = useMemo(()=> generateSelectedBooks({books,genreSelected}),[genreSelected,books])
+  const booksToShow = useMemo(()=> generateSelectedBooks({allBooks,genreSelected,result}),[genreSelected,allBooks,result])
+
+
+  console.log(result)
 
   const handleClick = ({value}) => {
     console.log(value)
@@ -44,8 +60,8 @@ const Books = (props) => {
     return <div>Loading...</div>
   }
 
-  if(books.length >= 0){
-    books.forEach(book => {
+  if(allBooks.length >= 0){
+    allBooks.forEach(book => {
       book.genres.forEach(genre => genres.push(genre))
     });
     genres = [...new Set(genres)]

@@ -4,7 +4,7 @@ import { USER_INFO, ALL_BOOKS } from '../queries'
 import BooksList from './BooksList'
 
 const Recommend = ({show}) => {
-    const [getBooks,resultAllBooks] = useLazyQuery(ALL_BOOKS)
+    const [getBooks,resultAllBooks] = useLazyQuery(ALL_BOOKS,{fetchPolicy:'cache-and-network'})
     const resultUserInfo = useQuery(USER_INFO,{
         onCompleted: ({me}) => getBooks({variables:{genre:me.favoriteGenre}})
     })

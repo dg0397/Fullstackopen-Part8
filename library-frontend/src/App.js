@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import LoginForm from './components/LoginForm'
@@ -11,6 +11,13 @@ const App = () => {
   const [error,setError] = useState('')
   const [user,setUser] = useState(null)
  
+  useEffect(() => {
+    const token = localStorage.getItem('library-user-token')
+    if(token){
+      setUser(token)
+    }
+  }, [])
+
   const notify = (message) => {
     setError(message)
     setTimeout(() => {
