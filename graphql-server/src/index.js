@@ -1,18 +1,26 @@
-const { ApolloServer, gql, UserInputError } = require("apollo-server");
-const { v1: uuid } = require("uuid");
-const mongoose = require("mongoose");
-const Author = require("../models/author");
-const Book = require("../models/book");
-const User = require("../models/user")
-const jwt = require('jsonwebtoken')
+import { ApolloServer, gql, UserInputError } from 'apollo-server-express'
+import express from 'express'
+//const { v1: uuid } = require("uuid");
 
-const { PubSub } = require('graphql-subscriptions')
-const pubsub = new PubSub()
+import { createServer } from 'http';
+import { execute, subscribe } from 'graphql';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 
+import Author from '../models/author.js';
+import Book from '../models/book.js';
+import User from '../models/user.js';
+
+import jwt from 'jsonwebtoken'
 const JWT_SECRET = 'graphql_library'
 
+import { PubSub } from 'graphql-subscriptions';
+const pubsub = new PubSub()
+
+import mongoose from 'mongoose';
 const MONGODB_URI =
   "mongodb+srv://dionisio_24:GHh7o2ZpgWOfihkl@cluster0.6jg7g.mongodb.net/books_graphql?retryWrites=true&w=majority";
+
 
 console.log("connecting to", MONGODB_URI);
 
@@ -303,7 +311,81 @@ const server = new ApolloServer({
   }
 });
 
-server.listen().then(({ url, subscriptionsUrl }) => {
-  console.log(`Server ready at ${url}`)
-  console.log(`Subscriptions ready at ${subscriptionsUrl}`)
-})
+//server.listen().then(({ url, subscriptionsUrl }) => {
+//  console.log(`Server ready at ${url}`)
+//  console.log(`Subscriptions ready at ${subscriptionsUrl}`)
+//})
+
+async function startApolloServer(typeDefs, resolvers) {
+
+  // Same ApolloServer initialization as before
+  //const server = new ApolloServer({ 
+  //  typeDefs, 
+  //  resolvers,
+  //  context: async ({ req }) => {
+  //    const auth = req ? req.headers.authorization : null
+  //    if (auth && auth.toLowerCase().startsWith('bearer ')) {
+  //      const decodedToken = jwt.verify(
+  //        auth.substring(7), JWT_SECRET
+  //      )
+  //      const currentUser = await User.findById(decodedToken.id)
+  //      return { currentUser }
+  //    }
+  //  } 
+  //});
+
+  // Required logic for integrating with Express
+  const app = express();
+  const httpServer = createServer(app);
+  const schema = makeExecutableSchema({ 
+    typeDefs, 
+    resolvers, 
+  });
+  const server = new ApolloServer({
+    schema,
+    context: async ({ req }) => {
+      const auth = req ? req.headers.authorization : null
+      if (auth && auth.toLowerCase().startsWith('bearer ')) {
+        const decodedToken = jwt.verify(
+          auth.substring(7), JWT_SECRET
+        )
+        const currentUser = await User.findById(decodedToken.id)
+        return { currentUser }
+      }
+    } 
+  });
+  await server.start();
+  server.applyMiddleware({
+     app,
+
+     // By default, apollo-server hosts its GraphQL endpoint at the
+     // server root. However, *other* Apollo Server packages host it at
+     // /graphql. Optionally provide this to match apollo-server.
+     path: '/'
+  });
+  const subscriptionServer = SubscriptionServer.create({
+    // This is the `schema` we just created.
+    schema,
+    // These are imported from `graphql`.
+    execute,
+    subscribe,
+ }, {
+    // This is the `httpServer` we created in a previous step.
+    server: httpServer,
+    // This `server` is the instance returned from `new ApolloServer`.
+    path: server.graphqlPath,
+ });
+ 
+ // Shut down in the case of interrupt and termination signals
+ // We expect to handle this more cleanly in the future. See (#5074)[https://github.com/apollographql/apollo-server/issues/5074] for reference.
+ ['SIGINT', 'SIGTERM'].forEach(signal => {
+   process.on(signal, () => subscriptionServer.close());
+ });
+
+  // Modified server startup
+  await new Promise(resolve => httpServer.listen({ port: 4000 }, resolve));
+  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+  console.log(`🚀 Subscriptions ready at ws://localhost:4000${server.graphqlPath}`)
+}
+
+startApolloServer(typeDefs,resolvers)
