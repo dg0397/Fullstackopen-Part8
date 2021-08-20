@@ -38,6 +38,8 @@ mongoose
     console.log("error connection to MongoDB:", error.message);
   });
 
+mongoose.set('debug', true);
+
 let authors = [
   {
     name: "Robert Martin",
@@ -212,9 +214,11 @@ const resolvers = {
       try {
         if (!author) {
           const newAuthor = new Author({ name: args.author });
-          await newAuthor.save();
 
           const newBook = new Book({ ...args, author: newAuthor._id });
+          newAuthor.bookCount++
+
+          await newAuthor.save();
           await newBook.save();
 
           pubsub.publish('BOOK_ADDED', { bookAdded: newBook })
@@ -222,6 +226,9 @@ const resolvers = {
           return newBook;
         }
         const newBook = new Book({ ...args, author: author._id });
+        author.bookCount++
+        
+        await author.save();
         await newBook.save();
         
         pubsub.publish('BOOK_ADDED', { bookAdded: newBook })
@@ -282,12 +289,12 @@ const resolvers = {
       subscribe: () => pubsub.asyncIterator(['BOOK_ADDED'])
     },
   },
-  Author: {
-    bookCount: async (root) => {
-      const writtenBooks = await Book.find({ author: root._id });
-      return writtenBooks.length;
-    },
-  },
+  //Author: {
+  //  bookCount: async (root) => {
+  //    const writtenBooks = await Book.find({ author: root._id });
+  //    return writtenBooks.length;
+  //  },
+  //},
   Book: {
     author: async (root) => {
       const selectedAuthor = await Author.findById(root.author);
@@ -296,20 +303,20 @@ const resolvers = {
   },
 };
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: async ({ req }) => {
-    const auth = req ? req.headers.authorization : null
-    if (auth && auth.toLowerCase().startsWith('bearer ')) {
-      const decodedToken = jwt.verify(
-        auth.substring(7), JWT_SECRET
-      )
-      const currentUser = await User.findById(decodedToken.id)
-      return { currentUser }
-    }
-  }
-});
+//const server = new ApolloServer({
+//  typeDefs,
+//  resolvers,
+//  context: async ({ req }) => {
+//    const auth = req ? req.headers.authorization : null
+//    if (auth && auth.toLowerCase().startsWith('bearer ')) {
+//      const decodedToken = jwt.verify(
+//        auth.substring(7), JWT_SECRET
+//      )
+//      const currentUser = await User.findById(decodedToken.id)
+//      return { currentUser }
+//    }
+//  }
+//});
 
 //server.listen().then(({ url, subscriptionsUrl }) => {
 //  console.log(`Server ready at ${url}`)
