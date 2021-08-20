@@ -1,11 +1,13 @@
-import { useApolloClient,useSubscription } from '@apollo/client'
 import React, { useState, useEffect } from 'react'
+import { useApolloClient,useSubscription } from '@apollo/client'
+
 import Authors from './components/Authors'
 import Books from './components/Books'
 import LoginForm from './components/LoginForm'
 import NewBook from './components/NewBook'
 import Notify from './components/Notify'
 import Recommend from './components/RecommendBooks'
+
 import { ALL_BOOKS, BOOK_ADDED } from './queries'
 
 const App = () => {
@@ -26,6 +28,12 @@ const App = () => {
     setTimeout(() => {
       setError(null)
     }, 10000)
+  }
+
+  const logout = () => {
+    setUser(null)
+    localStorage.clear()
+    client.resetStore()
   }
 
   const updateCacheWith = (addedBook) => {
@@ -58,7 +66,7 @@ const App = () => {
             <>
               <button onClick={() => setPage('add')}>add book</button>
               <button onClick={() => setPage('recommend')}>Recommend</button>
-              <button onClick={() => setUser(null)}>LogOut</button>
+              <button onClick={logout}>LogOut</button>
             </>
           ) : (
             <button onClick = {() => setPage('login')}>Login</button>
