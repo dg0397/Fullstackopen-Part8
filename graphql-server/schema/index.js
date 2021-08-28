@@ -54,8 +54,6 @@ const resolvers = {
 }
 
 const typeDefs = [Query, Mutation, Subscription, BookType, AuthorType, User, Token]
-console.log(typeDefs)
-console.log(merge(resolvers, mutationResolvers, subscriptionResolvers))
 
 const schema = makeExecutableSchema({
   typeDefs,

@@ -29,7 +29,7 @@ mongoose
     console.log('error connection to MongoDB:', error.message)
   })
 
-//mongoose.set('debug', true)
+// mongoose.set('debug', true)
 
 async function startApolloServer () {
   // Required logic for integrating with Express
