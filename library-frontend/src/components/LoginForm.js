@@ -1,59 +1,58 @@
-import React,{ useEffect, useState } from "react";
-import { useMutation } from "@apollo/client";
-import { LOGIN } from "../queries";
+import React, { useEffect, useState } from 'react'
+import { useMutation } from '@apollo/client'
+import { LOGIN } from '../graphql/mutations/login'
 
-const LoginForm = ({setError,setUser,show}) => {
-    const [username,setUsername] = useState('')
-    const [password,setPassword] = useState('')
-    
-    const [ login , result ] = useMutation(LOGIN,{
-        onError : (error) => setError(error.graphQLErrors[0].message)
-    }) 
+const LoginForm = ({ setError, setUser, show }) => {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
-    useEffect(()=>{
-        if(result.data){
-            const token = result.data.login.value
-            setUser(token)
-            localStorage.setItem('library-user-token', token)
-        }
-    },[result.data,setUser])
+  const [login, result] = useMutation(LOGIN, {
+    onError: (error) => setError(error.graphQLErrors[0].message)
+  })
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-
-        login({variables : {username,password}})
-
-        setUsername('')
-        setPassword('')
-
+  useEffect(() => {
+    if (result.data) {
+      const token = result.data.login.value
+      setUser(token)
+      window.localStorage.setItem('library-user-token', token)
     }
+  }, [result.data, setUser])
 
-    if(!show){
-        return null
-    }
-    return(
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    login({ variables: { username, password } })
+
+    setUsername('')
+    setPassword('')
+  }
+
+  if (!show) {
+    return null
+  }
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
         <div>
-            <form onSubmit = {handleSubmit}>
-                <div>
-                    Username: 
-                    <input
-                        value = {username} 
-                        onChange = {({target}) => setUsername(target.value)}
-                        type = "text"
-                    />
-                </div>
-                <div>
-                    Password: 
-                    <input
-                        value = {password} 
-                        onChange = {({target}) => setPassword(target.value)}
-                        type = "password"
-                    />
-                </div>
-                <button type = 'submit'>Login</button>
-            </form>
+          Username:
+          <input
+            value={username}
+            onChange={({ target }) => setUsername(target.value)}
+            type='text'
+          />
         </div>
-    )
+        <div>
+          Password:
+          <input
+            value={password}
+            onChange={({ target }) => setPassword(target.value)}
+            type='password'
+          />
+        </div>
+        <button type='submit'>Login</button>
+      </form>
+    </div>
+  )
 }
 
 export default LoginForm

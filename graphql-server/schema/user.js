@@ -4,4 +4,4 @@ export const typeDef = `
         favoriteGenre: String!
         id: ID!
     }
-`;
+`

@@ -12,10 +12,10 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 4
-  },
+  }
 })
 
 schema.plugin(uniqueValidator)
-const User = mongoose.model('User',schema)
+const User = mongoose.model('User', schema)
 
 export default User

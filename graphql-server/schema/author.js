@@ -5,4 +5,4 @@ export const typeDef = `
         id: ID!
         bookCount: Int!
     }
-`;
+`

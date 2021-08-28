@@ -6,4 +6,4 @@ export const typeDef = `
         genres: [String!]!
         id: ID!
     }
-`;
+`
