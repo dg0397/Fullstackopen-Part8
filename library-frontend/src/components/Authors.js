@@ -1,16 +1,16 @@
-import React, { useMemo} from 'react'
+import React, { useMemo } from 'react'
 import { useQuery } from '@apollo/client'
-import { ALL_AUTHORS } from '../queries'
+import { ALL_AUTHORS } from '../graphql/queries/allAuthors'
 import AuthorBirdYearForm from './SetAuthorBirthYearForm'
 
-const Authors = ({show,setError,user}) => {
+const Authors = ({ show, setError, user }) => {
   const result = useQuery(ALL_AUTHORS)
-  const authors = useMemo( ()=> {
-    if(result.data){
+  const authors = useMemo(() => {
+    if (result.data) {
       return [...result.data.allAuthors]
     }
     return []
-  },[result.data] )
+  }, [result.data])
 
   if (!show) {
     return null
@@ -27,7 +27,7 @@ const Authors = ({show,setError,user}) => {
         <table>
           <tbody>
             <tr>
-              <th></th>
+              <th />
               <th>
                 born
               </th>
@@ -46,7 +46,7 @@ const Authors = ({show,setError,user}) => {
         </table>
 
       </div>
-      { user && <AuthorBirdYearForm authors = {authors} setError = {setError}/>}
+      {user && <AuthorBirdYearForm authors={authors} setError={setError} />}
     </>
   )
 }

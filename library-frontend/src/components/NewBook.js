@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
-import { ADD_BOOK } from '../queries'
+import { ADD_BOOK } from '../graphql/mutations/addBook'
 
-const NewBook = ({show , setError}) => {
-  const [ addNewBook ] = useMutation(ADD_BOOK,{ 
-    onError: (error) => { setError(error.graphQLErrors[0].message)},
-    //update:(store,response) =>{
+const NewBook = ({ show, setError }) => {
+  const [addNewBook] = useMutation(ADD_BOOK, {
+    onError: (error) => { setError(error.graphQLErrors[0].message) }
+    // update:(store,response) =>{
     //  const dataInStore = store.readQuery({query:ALL_BOOKS})
     //  store.writeQuery({
     //    query:ALL_BOOKS,
@@ -14,9 +14,9 @@ const NewBook = ({show , setError}) => {
     //      allBooks : [...dataInStore.allBooks,response.data.addBook]
     //    }
     //  })
-    //}
+    // }
   })
-  
+
   const [title, setTitle] = useState('')
   const [author, setAuhtor] = useState('')
   const [published, setPublished] = useState('')
@@ -29,12 +29,12 @@ const NewBook = ({show , setError}) => {
 
   const submit = async (event) => {
     event.preventDefault()
-    
+
     addNewBook({
-      variables : {
+      variables: {
         title,
         author,
-        published : Number(published),
+        published: Number(published),
         genres
       }
     })
@@ -82,7 +82,7 @@ const NewBook = ({show , setError}) => {
             value={genre}
             onChange={({ target }) => setGenre(target.value)}
           />
-          <button onClick={addGenre} type="button">add genre</button>
+          <button onClick={addGenre} type='button'>add genre</button>
         </div>
         <div>
           genres: {genres.join(' ')}
